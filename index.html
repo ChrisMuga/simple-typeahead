@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>TypeAhead</title>
+    <style>
+      .twitter-typeahead, .tt-hint, .tt-input, .tt-menu  { width: 100%; } 
+      .b0{border-radius: 0;}
+    </style>
+  </head>
+  <body>
+    
+    <div class = "row d-flex justify-content-center">
+      <div class="col-md-6">
+        <h1>Search Users</h1>
+        <input type = "text" class="form-control typeahead mb-1" type="text" placeholder="Search">
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <script src = "typeahead/typeahead.jquery.js"></script>
+    <script src = "typeahead/bloodhound.js"></script>
+    <script>
+
+    var users = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      identify: function(obj) { return obj.name; },
+      prefetch: 'http://127.0.0.1:8000/api/users'
+    });
+
+    function usersWithDefaults(q, sync) {
+      if (q === '') {
+      sync(users.index.all());
+      }
+
+      else {
+      users.search(q, sync);
+      }
+    }
+
+    $('.typeahead').typeahead(
+    {
+      minLength: 0,
+      highlight: true
+    },
+    {
+      name: 'nfl-teams',
+      display: 'name',
+      source: usersWithDefaults,
+      templates: {
+        empty: [
+          '<div class="empty-message text-danger">',
+            'unable to find any Best Picture winners that match the current query',
+          '</div>'
+        ].join('\n'),
+        suggestion: function (data) 
+                    {
+
+                        return `<div class = "alert alert-light">
+                                  <span>
+                                    <strong>${data.name}</strong>
+                                    <br/>
+                                    <i>${data.email}</i>
+                                  <span>
+                                  <button class = "btn btn-success b0 float-right" onclick="disp('${data.name}')">Assign</button>
+                                </div>`
+                    }
+                }
+    });
+    
+
+     function disp(name)
+     {
+      alert(name);
+     }
+    </script>
+  </body>
+</html>
